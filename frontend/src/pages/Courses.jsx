@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCourseModal } from '../context/CourseContext';
 import { ChevronDown, ChevronRight, BookOpen, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import coursesData from '../coursesData.json';
 
 const RecursiveNode = ({ nodeName, nodeData, level, openCourseModal, initialOpen }) => {
     // Top-level categories (level 0) are closed by default to avoid overwhelming UI.
@@ -93,18 +94,8 @@ const Courses = () => {
     const location = useLocation();
 
     useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const res = await fetch('http://localhost:5000/api/public/courses');
-                const data = await res.json();
-                setCourses(data);
-                setLoading(false);
-            } catch (err) {
-                console.error('Error fetching courses:', err);
-                setLoading(false);
-            }
-        };
-        fetchCourses();
+        setCourses(coursesData);
+        setLoading(false);
     }, []);
 
     const buildTree = (coursesList) => {

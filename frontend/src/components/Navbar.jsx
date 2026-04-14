@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Gift, MessageCircle, ChevronDown, Phone, Clock, Globe, MessageSquare, Navigation, Video, User, ChevronRight, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import coursesData from '../coursesData.json';
 
 const RecursiveMenu = ({ nodeData, closeMenu, path }) => {
   const navigate = useNavigate();
@@ -87,28 +88,23 @@ const Navbar = () => {
     const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/public/courses')
-            .then(r => r.json())
-            .then(data => {
-                const tree = {};
-                data.forEach(course => {
-                    const parts = course.title.split('|');
-                    if(parts.length === 1) {
-                         if(!tree['_courses']) tree['_courses'] = [];
-                         tree['_courses'].push({...course, leafTitle: parts[0]});
-                         return;
-                    }
-                    let current = tree;
-                    for(let i=0; i<parts.length - 1; i++) {
-                        if (!current[parts[i]]) current[parts[i]] = {};
-                        current = current[parts[i]];
-                    }
-                    if(!current['_courses']) current['_courses'] = [];
-                    current['_courses'].push({...course, leafTitle: parts[parts.length-1]});
-                });
-                setCoursesTree(tree);
-            })
-            .catch(console.error);
+        const tree = {};
+        coursesData.forEach(course => {
+            const parts = course.title.split('|');
+            if(parts.length === 1) {
+                 if(!tree['_courses']) tree['_courses'] = [];
+                 tree['_courses'].push({...course, leafTitle: parts[0]});
+                 return;
+            }
+            let current = tree;
+            for(let i=0; i<parts.length - 1; i++) {
+                if (!current[parts[i]]) current[parts[i]] = {};
+                current = current[parts[i]];
+            }
+            if(!current['_courses']) current['_courses'] = [];
+            current['_courses'].push({...course, leafTitle: parts[parts.length-1]});
+        });
+        setCoursesTree(tree);
     }, []);
 
   return (

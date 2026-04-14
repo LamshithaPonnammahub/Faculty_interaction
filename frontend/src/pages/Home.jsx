@@ -12,11 +12,8 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch from backend API to fulfill database access requirement
-    fetch('http://localhost:5000/api/public/stats')
-      .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(err => console.error("Error fetching stats:", err));
+    // Mocking stats to decouple the backend
+    setStats({ activeStudents: 8520, totalCourses: 194 });
   }, []);
 
   return (

@@ -23,49 +23,23 @@ const GlobalCourseModal = () => {
         setMessage('Please sign in or register to enroll in courses!');
         return;
       }
-      const response = await fetch('http://localhost:5000/api/student/enroll', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token
-        },
-        body: JSON.stringify({ 
-           course_id: selectedCourse.id,
-           course_title: selectedCourse.title
-        })
-      });
-      const data = await response.json();
-      if(response.ok) {
-        setMessage('Enrolled successfully! Details stored in Database.');
-      } else {
-        setMessage(data.message || 'Enrollment failed');
-      }
+      setTimeout(() => {
+        setMessage('Enrolled successfully! (Frontend Only Mode)');
+      }, 500);
     } catch(err) {
-      setMessage('Error connecting to database');
+      setMessage('Error processing request');
     }
   };
 
   const handleBookDemo = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/public/demo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: demoForm.name, 
-          email: demoForm.email, 
-          course_name: selectedCourse.title, 
-          preferred_date: demoForm.date 
-        })
-      });
-      if(response.ok) {
-        setMessage('Demo session booked successfully! Details stored in Database.');
+      setTimeout(() => {
+        setMessage('Demo session booked successfully! We will contact you soon. (Frontend Only Mode)');
         setDemoForm({ name: '', email: '', date: '' });
-      } else {
-        setMessage('Failed to book demo');
-      }
+      }, 500);
     } catch(err) {
-      setMessage('Error connecting to Server');
+      setMessage('Error processing request');
     }
   };
 
