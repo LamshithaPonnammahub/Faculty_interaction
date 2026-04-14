@@ -20,17 +20,27 @@ const RecursiveMenu = ({ nodeData, closeMenu, path }) => {
         />
       ))}
       {nodeData['_courses'] && nodeData['_courses'].map(course => (
-        <div 
-          key={course.id} 
-          style={menuStyles.menuItem}
-          onClick={() => {
-            closeMenu();
-            navigate(`/courses?category=${encodeURIComponent(path.split('|')[1] || path)}`);
-          }}
-        >
-          <span style={menuStyles.itemText}>{course.leafTitle}</span>
-        </div>
+        <CourseLeafItem key={course.id} course={course} closeMenu={closeMenu} path={path} />
       ))}
+    </div>
+  );
+};
+
+const CourseLeafItem = ({ course, closeMenu, path }) => {
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <div 
+        style={{...menuStyles.menuItem, ...(isHovered ? menuStyles.menuItemHover : {})}}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => {
+            closeMenu();
+            navigate(`/courses#${course.leafTitle.replace(/\s+/g, '-')}`);
+        }}
+    >
+        <span style={menuStyles.itemText}>{course.leafTitle}</span>
     </div>
   );
 };
@@ -89,11 +99,12 @@ const MobileRecursiveMenu = ({ nodeData, closeFullMenu, path }) => {
           key={course.id} 
           onClick={() => {
              closeFullMenu();
-             navigate(`/courses?category=${encodeURIComponent(path.split('|')[1] || path)}`);
+             navigate(`/courses#${course.leafTitle.replace(/\s+/g, '-')}`);
           }} 
-          style={{ padding: '0.2rem 0', color: '#64748b', fontSize: '0.85rem' }}
+          style={{ padding: '0.4rem 0', color: '#475569', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
         >
-          {course.leafTitle}
+          <div style={{width: 5, height: 5, borderRadius: '50%', backgroundColor: '#3b82f6', flexShrink: 0}}></div>
+          <span style={{lineHeight: 1.3}}>{course.leafTitle}</span>
         </div>
       ))}
     </div>

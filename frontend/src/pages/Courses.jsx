@@ -48,6 +48,7 @@ const RecursiveNode = ({ nodeName, nodeData, level, openCourseModal, initialOpen
                                 <div style={styles.grid}>
                                     {courses.map(c => (
                                         <motion.div 
+                                            id={c.leafTitle.replace(/\s+/g, '-')}
                                             key={c.id} 
                                             style={styles.card}
                                             whileHover={{ y: -5, boxShadow: '0 8px 15px rgba(0,0,0,0.1)' }}
