@@ -1,0 +1,396 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Gift, MessageCircle, ChevronDown, Phone, Clock, Globe, MessageSquare, Navigation, Video, User, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const RecursiveMenu = ({ nodeData, closeMenu, path }) => {
+  const navigate = useNavigate();
+  const subCategories = Object.keys(nodeData).filter(k => k !== '_courses');
+
+  return (
+    <div className="glass-menu" style={menuStyles.glassPanel}>
+      <div style={{color: 'red', fontSize: '10px'}}>{subCategories.length === 0 ? "EMPTY" : `Keys: ${subCategories.join(', ')}`}</div>
+      {subCategories.map((subCat) => (
+        <MenuItem 
+          key={subCat} 
+          name={subCat} 
+          nodeData={nodeData[subCat]} 
+          closeMenu={closeMenu} 
+          path={`${path}|${subCat}`}
+        />
+      ))}
+      {nodeData['_courses'] && nodeData['_courses'].map(course => (
+        <div 
+          key={course.id} 
+          style={menuStyles.menuItem}
+          onClick={() => {
+            closeMenu();
+            navigate(`/courses?category=${encodeURIComponent(path.split('|')[1] || path)}`);
+          }}
+        >
+          <span style={menuStyles.itemText}>{course.leafTitle}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const MenuItem = ({ name, nodeData, closeMenu, path }) => {
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+  const hasSubItems = Object.keys(nodeData).length > 0 && !(Object.keys(nodeData).length === 1 && nodeData['_courses']);
+
+  return (
+    <div 
+      style={menuStyles.menuItemWrapper}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div 
+        style={{...menuStyles.menuItem, ...(isHovered ? menuStyles.menuItemHover : {})}}
+        onClick={() => {
+          if (!hasSubItems) {
+            closeMenu();
+            let topCat = path.split('|')[1];
+            if (!topCat) topCat = name;
+            navigate(`/courses?category=${encodeURIComponent(topCat)}`);
+          }
+        }}
+      >
+        <span style={menuStyles.itemText}>{name}</span>
+        {hasSubItems && <ChevronRight size={14} style={{ color: '#64748b' }} />}
+      </div>
+      
+      {/* Render sub-menu safely positioned to the right */}
+      <AnimatePresence>
+        {isHovered && hasSubItems && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.2 }}
+            style={menuStyles.subMenuContainer}
+          >
+            <RecursiveMenu nodeData={nodeData} closeMenu={closeMenu} path={path} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const Navbar = () => {
+    const navigate = useNavigate();
+    const [coursesTree, setCoursesTree] = useState({});
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    useEffect(() => {
+        fetch('http://localhost:5000/api/public/courses')
+            .then(r => r.json())
+            .then(data => {
+                const tree = {};
+                data.forEach(course => {
+                    const parts = course.title.split('|');
+                    if(parts.length === 1) {
+                         if(!tree['_courses']) tree['_courses'] = [];
+                         tree['_courses'].push({...course, leafTitle: parts[0]});
+                         return;
+                    }
+                    let current = tree;
+                    for(let i=0; i<parts.length - 1; i++) {
+                        if (!current[parts[i]]) current[parts[i]] = {};
+                        current = current[parts[i]];
+                    }
+                    if(!current['_courses']) current['_courses'] = [];
+                    current['_courses'].push({...course, leafTitle: parts[parts.length-1]});
+                });
+                setCoursesTree(tree);
+            })
+            .catch(console.error);
+    }, []);
+
+  return (
+    <>
+      <div style={styles.topBar}>
+        <div className="container" style={styles.topBarContainer}>
+          <div style={styles.topBarLeft}>
+            <span style={styles.topBarItem}><Phone size={14} /> +91 6783654256</span>
+            <span style={styles.topBarItem}><Clock size={14} /> Mon - Sat: 8:00 - 15:00</span>
+          </div>
+          <div style={styles.topBarRight}>
+            <div style={styles.followUs}>
+              <span>Follow Us:</span>
+              <Globe size={14} />
+              <MessageSquare size={14} />
+              <Navigation size={14} />
+              <Video size={14} />
+            </div>
+            <Link to="/login" style={styles.loginRegister}>
+              <User size={14} /> Login / Register
+            </Link>
+          </div>
+        </div>
+      </div>
+      
+      <nav style={styles.nav}>
+        <div className="container" style={styles.container}>
+          <div style={styles.leftSection}>
+            <Link to="/" style={styles.logoContainer}>
+              <div style={styles.treePlaceholder}>🌳</div>
+              <div style={styles.logoText}>
+                <span style={{fontWeight: 800, fontSize: '1.3rem', color: '#1e3a8a'}}>English Faculties</span>
+                <span style={{fontSize: '0.75rem', color: '#64748b', fontWeight: 600}}>Rooted in Excellence</span>
+              </div>
+            </Link>
+            
+            <div style={styles.joinDebate}>
+              <span style={{fontWeight: 700, color: '#334155'}}>Join debate club</span>
+            </div>
+            
+            <div style={styles.giftTab}>
+               <Gift size={24} color="#2563eb" />
+               <span style={{fontSize: '0.8rem', fontWeight: 700, color: '#2563eb', lineHeight: 1.1}}>Gift a<br/>Course</span>
+            </div>
+          </div>
+
+          <div style={styles.rightSection}>
+            <div style={styles.links}>
+              <Link to="/" style={styles.link}>HOME</Link>
+              
+              {/* Dynamic Courses Dropdown wrapper */}
+              <div 
+                 style={styles.dropdownContainer}
+                 onMouseEnter={() => setIsMenuOpen(true)}
+                 onMouseLeave={() => setIsMenuOpen(false)}
+              >
+                 <span style={{...styles.link, cursor: 'pointer', color: isMenuOpen ? '#2563eb' : '#334155'}}>
+                     COURSES <ChevronDown size={14} style={{ transform: isMenuOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }}/>
+                 </span>
+                 
+                 {/* Glassmorphism Main Panel */}
+                 <AnimatePresence>
+                     {isMenuOpen && (
+                         <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.2 }}
+                            style={menuStyles.mainMenuContainer}
+                         >
+                            <RecursiveMenu nodeData={coursesTree} closeMenu={() => setIsMenuOpen(false)} path="" />
+                         </motion.div>
+                     )}
+                 </AnimatePresence>
+              </div>
+
+              <Link to="/about" style={styles.link}>ABOUT US</Link>
+              
+              <div style={styles.dropdownContainer}>
+                 <span style={styles.link}>BLOG <ChevronDown size={14}/></span>
+              </div>
+
+              <Link to="/contact" style={styles.link}>CONTACT</Link>
+            </div>
+            
+            <div style={styles.whatsappIcon}>
+               <MessageCircle size={28} color="#22c55e" />
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
+  );
+};
+
+const menuStyles = {
+    mainMenuContainer: {
+        position: 'absolute',
+        top: '90%', 
+        left: 0,
+        zIndex: 2000,
+        paddingTop: '20px'
+    },
+    subMenuContainer: {
+        position: 'absolute',
+        top: '-10px',
+        left: '100%',
+        paddingLeft: '10px',
+        zIndex: 2000
+    },
+    glassPanel: {
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.4)',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+        borderRadius: '12px',
+        minWidth: '260px',
+        padding: '0.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    menuItemWrapper: {
+        position: 'relative'
+    },
+    menuItem: {
+        padding: '0.8rem 1.2rem',
+        borderRadius: '8px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        cursor: 'pointer',
+        transition: 'background 0.2s',
+    },
+    menuItemHover: {
+        background: 'rgba(59, 130, 246, 0.1)',
+    },
+    itemText: {
+        fontSize: '0.95rem',
+        fontWeight: 600,
+        color: '#1e293b',
+        fontFamily: "'Inter', sans-serif"
+    }
+};
+
+const styles = {
+  topBar: {
+    background: 'linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%)',
+    color: 'white',
+    width: '100%',
+    padding: '8px 0',
+    fontSize: '0.85rem',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    zIndex: 1001,
+    fontFamily: "'Inter', sans-serif",
+  },
+  topBarContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%'
+  },
+  topBarLeft: {
+    display: 'flex',
+    gap: '20px'
+  },
+  topBarItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  },
+  topBarRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '25px'
+  },
+  followUs: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  loginRegister: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    color: 'white',
+    textDecoration: 'none',
+    fontWeight: 600,
+    borderLeft: '1px solid rgba(255,255,255,0.3)',
+    paddingLeft: '25px'
+  },
+  nav: {
+    position: 'fixed',
+    top: '36px',
+    left: '0',
+    width: '100%',
+    height: '90px',
+    zIndex: 1000,
+    display: 'flex',
+    alignItems: 'center',
+    background: 'rgba(255, 255, 255, 0.98)',
+    backdropFilter: 'blur(10px)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+    fontFamily: "'Inter', sans-serif",
+  },
+  container: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%'
+  },
+  leftSection: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1.5rem'
+  },
+  logoContainer: {
+    textDecoration: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
+  },
+  treePlaceholder: {
+    fontSize: '40px'
+  },
+  logoText: {
+    display: 'flex',
+    flexDirection: 'column',
+    lineHeight: '1.1'
+  },
+  joinDebate: {
+    marginLeft: '1rem',
+    borderLeft: '1px solid #e2e8f0',
+    paddingLeft: '1rem',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  giftTab: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    cursor: 'pointer',
+    marginLeft: '10px'
+  },
+  rightSection: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '2rem'
+  },
+  links: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '2rem'
+  },
+  link: {
+    color: '#334155',
+    textDecoration: 'none',
+    fontWeight: 700,
+    fontSize: '0.9rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    transition: 'color 0.3s',
+    letterSpacing: '0.5px'
+  },
+  dropdownContainer: {
+    position: 'relative',
+    height: '90px', 
+    display: 'flex',
+    alignItems: 'center'
+  },
+  whatsappIcon: {
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: '10px',
+    background: '#dcfce7',
+    padding: '10px',
+    borderRadius: '50%',
+    transition: '0.3s'
+  }
+};
+
+export default Navbar;
