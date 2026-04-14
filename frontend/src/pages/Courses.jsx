@@ -8,7 +8,7 @@ import coursesData from '../coursesData.json';
 const RecursiveNode = ({ nodeName, nodeData, level, openCourseModal, initialOpen }) => {
     // Top-level categories (level 0) are closed by default to avoid overwhelming UI.
     // Sub-levels are open by default so when user clicks a top-level, they see the tree.
-    const [isOpen, setIsOpen] = useState(level > 0 || initialOpen); 
+    const [isOpen, setIsOpen] = useState(true); 
     const navigate = useNavigate();
     
     const courses = nodeData['_courses'] || [];

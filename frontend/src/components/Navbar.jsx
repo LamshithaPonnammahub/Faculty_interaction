@@ -80,6 +80,64 @@ const MenuItem = ({ name, nodeData, closeMenu, path }) => {
   );
 };
 
+const MobileRecursiveMenu = ({ nodeData, closeFullMenu, path }) => {
+  const navigate = useNavigate();
+  const subCategories = Object.keys(nodeData).filter(k => k !== '_courses');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', paddingLeft: '1rem', marginTop: '0.5rem', borderLeft: '1px solid #e2e8f0', marginLeft: '0.5rem' }}>
+      {subCategories.map(subCat => (
+        <MobileMenuItem key={subCat} name={subCat} nodeData={nodeData[subCat]} closeFullMenu={closeFullMenu} path={`${path}|${subCat}`} />
+      ))}
+      {nodeData['_courses'] && nodeData['_courses'].map(course => (
+        <div 
+          key={course.id} 
+          onClick={() => {
+             closeFullMenu();
+             navigate(`/courses?category=${encodeURIComponent(path.split('|')[1] || path)}`);
+          }} 
+          style={{ padding: '0.2rem 0', color: '#64748b', fontSize: '0.85rem' }}
+        >
+          {course.leafTitle}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const MobileMenuItem = ({ name, nodeData, closeFullMenu, path }) => {
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const hasSubItems = Object.keys(nodeData).length > 0 && !(Object.keys(nodeData).length === 1 && nodeData['_courses']);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+      <div 
+        onClick={() => {
+            if (hasSubItems) {
+                setIsOpen(!isOpen);
+             } else {
+                let topCat = path.split('|')[1];
+                if (!topCat) topCat = name;
+                navigate(`/courses?category=${encodeURIComponent(topCat)}`);
+                closeFullMenu();
+             }
+        }}
+        style={{ fontWeight: 600, color: '#475569', display: 'flex', justifyContent: 'space-between', padding: '0.2rem 0', cursor: 'pointer', fontSize: '0.9rem' }}
+      >
+        <span>{name}</span> {hasSubItems && <ChevronDown size={14} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />}
+      </div>
+      <AnimatePresence>
+          {isOpen && (
+              <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} style={{ overflow: 'hidden' }}>
+                  <MobileRecursiveMenu nodeData={nodeData} closeFullMenu={closeFullMenu} path={path} />
+              </motion.div>
+          )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const Navbar = () => {
     const navigate = useNavigate();
     const [coursesTree, setCoursesTree] = useState({});
@@ -224,19 +282,10 @@ const Navbar = () => {
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: 'auto', opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        style={{ overflow: 'hidden', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}
+                                        style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '1rem' }}
                                     >
-                                        <Link to="/courses" onClick={() => setIsMobileMenuOpen(false)} style={{...styles.link, color: '#3b82f6', fontWeight: 600}}>All Courses Showcase</Link>
-                                        {Object.keys(coursesTree).filter(k => k !== '_courses').map(cat => (
-                                            <Link 
-                                                key={cat}
-                                                to={`/courses?category=${encodeURIComponent(cat)}`} 
-                                                onClick={() => setIsMobileMenuOpen(false)} 
-                                                style={{...styles.link, fontSize: '0.85rem', color: '#64748b'}}
-                                            >
-                                                {cat}
-                                            </Link>
-                                        ))}
+                                        <Link to="/courses" onClick={() => setIsMobileMenuOpen(false)} style={{...styles.link, color: '#3b82f6', fontWeight: 600, paddingLeft: '1rem'}}>All Courses Showcase</Link>
+                                        <MobileRecursiveMenu nodeData={coursesTree} closeFullMenu={() => setIsMobileMenuOpen(false)} path="" />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
