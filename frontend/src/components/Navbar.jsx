@@ -10,7 +10,6 @@ const RecursiveMenu = ({ nodeData, closeMenu, path }) => {
 
   return (
     <div className="glass-menu" style={menuStyles.glassPanel}>
-      <div style={{color: 'red', fontSize: '10px'}}>{subCategories.length === 0 ? "EMPTY" : `Keys: ${subCategories.join(', ')}`}</div>
       {subCategories.map((subCat) => (
         <MenuItem 
           key={subCat} 
@@ -50,12 +49,10 @@ const MenuItem = ({ name, nodeData, closeMenu, path }) => {
       <div 
         style={{...menuStyles.menuItem, ...(isHovered ? menuStyles.menuItemHover : {})}}
         onClick={() => {
-          if (!hasSubItems) {
             closeMenu();
             let topCat = path.split('|')[1];
             if (!topCat) topCat = name;
             navigate(`/courses?category=${encodeURIComponent(topCat)}`);
-          }
         }}
       >
         <span style={menuStyles.itemText}>{name}</span>
