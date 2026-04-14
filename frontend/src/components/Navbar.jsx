@@ -84,6 +84,7 @@ const Navbar = () => {
     const [coursesTree, setCoursesTree] = useState({});
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
 
     useEffect(() => {
         fetch('http://localhost:5000/api/public/courses')
@@ -213,7 +214,38 @@ const Navbar = () => {
                  >
                      <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>HOME</Link>
-                         <Link to="/courses" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>COURSES</Link>
+                         
+                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div 
+                                style={{ ...styles.link, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                                onClick={() => setIsMobileCoursesOpen(!isMobileCoursesOpen)}
+                            >
+                                <span>COURSES</span> <ChevronDown size={18} style={{ transform: isMobileCoursesOpen ? 'rotate(180deg)' : 'none', transition: '0.2s', color: '#3b82f6' }} />
+                            </div>
+                            <AnimatePresence>
+                                {isMobileCoursesOpen && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        style={{ overflow: 'hidden', paddingLeft: '1rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}
+                                    >
+                                        <Link to="/courses" onClick={() => setIsMobileMenuOpen(false)} style={{...styles.link, color: '#3b82f6', fontWeight: 600}}>All Courses Showcase</Link>
+                                        {Object.keys(coursesTree).filter(k => k !== '_courses').map(cat => (
+                                            <Link 
+                                                key={cat}
+                                                to={`/courses?category=${encodeURIComponent(cat)}`} 
+                                                onClick={() => setIsMobileMenuOpen(false)} 
+                                                style={{...styles.link, fontSize: '0.85rem', color: '#64748b'}}
+                                            >
+                                                {cat}
+                                            </Link>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                         </div>
+
                          <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>ABOUT US</Link>
                          <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>CONTACT</Link>
                          <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} style={{...styles.loginRegister, color: '#1e3a8a', border: 'none', padding: 0, textDecoration: 'none'}}>
