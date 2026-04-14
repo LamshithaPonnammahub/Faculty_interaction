@@ -18,6 +18,7 @@ const RecursiveNode = ({ nodeName, nodeData, level, openCourseModal, initialOpen
         <div style={{ marginTop: level === 0 ? '0' : '0.5rem' }}>
             {nodeName && level === 0 && (
                 <div 
+                    id={nodeName.replace(/\s+/g, '-')}
                     style={styles.categoryHeader} 
                     onClick={() => setIsOpen(!isOpen)}
                 >
@@ -28,6 +29,7 @@ const RecursiveNode = ({ nodeName, nodeData, level, openCourseModal, initialOpen
 
             {nodeName && level > 0 && (
                 <div 
+                    id={nodeName.replace(/\s+/g, '-')}
                     style={{ ...styles.subCategoryHeader, cursor: subcats.length > 0 ? 'pointer' : 'default' }}
                     onClick={() => subcats.length > 0 && setIsOpen(!isOpen)}
                 >
@@ -97,6 +99,15 @@ const Courses = () => {
         setCourses(coursesData);
         setLoading(false);
     }, []);
+
+    useEffect(() => {
+        if (!loading && location.hash) {
+            setTimeout(() => {
+                const el = document.getElementById(location.hash.substring(1));
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
+        }
+    }, [location.hash, loading]);
 
     const buildTree = (coursesList) => {
         const tree = {};

@@ -50,9 +50,7 @@ const MenuItem = ({ name, nodeData, closeMenu, path }) => {
         style={{...menuStyles.menuItem, ...(isHovered ? menuStyles.menuItemHover : {})}}
         onClick={() => {
             closeMenu();
-            let topCat = path.split('|')[1];
-            if (!topCat) topCat = name;
-            navigate(`/courses?category=${encodeURIComponent(topCat)}`);
+            navigate(`/courses#${name.replace(/\s+/g, '-')}`);
         }}
       >
         <span style={menuStyles.itemText}>{name}</span>
