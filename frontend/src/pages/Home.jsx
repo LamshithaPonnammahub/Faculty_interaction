@@ -34,6 +34,7 @@ const Home = () => {
         <div className="container" style={styles.heroContainer}>
           <div style={styles.heroContent}>
             <motion.h1 
+              className="heroQuote"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               style={styles.heroQuote}
@@ -49,6 +50,7 @@ const Home = () => {
               English is a magical language, which can take you to a place called wonderland.
             </motion.p>
             <motion.button 
+              className="heroButton"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -61,6 +63,7 @@ const Home = () => {
 
           <div style={styles.heroImageWrapper}>
             <motion.div 
+               className="heroImageCircle"
                initial={{ scale: 0.9, opacity: 0 }}
                animate={{ scale: 1, opacity: 1 }}
                transition={{ duration: 0.6 }}
@@ -79,8 +82,8 @@ const Home = () => {
             <div style={styles.sectionLabel}>
               <BookOpen size={16} /> COURSES
             </div>
-            <h2 style={styles.sectionTitle}>Explore Top Courses</h2>
-            <button style={styles.viewAllBtn} onClick={() => navigate('/courses')}>
+            <h2 className="sectionTitle" style={styles.sectionTitle}>Explore Top Courses</h2>
+            <button className="viewAllBtn" style={styles.viewAllBtn} onClick={() => navigate('/courses')}>
               VIEW ALL COURSES <ArrowRight size={16} style={{marginLeft: '8px'}} />
             </button>
           </div>
@@ -184,12 +187,12 @@ const styles = {
     position: 'relative',
     zIndex: 1,
     height: '100%',
-    paddingRight: '60px'
+    padding: '0 1rem'
   },
   heroContent: {
-    flex: '1 1 500px',
+    flex: '1 1 300px',
     maxWidth: '650px',
-    paddingLeft: '2rem'
+    paddingLeft: '0'
   },
   heroQuote: {
     fontSize: '2.5rem',
@@ -308,7 +311,7 @@ const styles = {
   },
   cardsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', 
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
     gap: '2rem',
     width: '100%',
     padding: '0 1rem'

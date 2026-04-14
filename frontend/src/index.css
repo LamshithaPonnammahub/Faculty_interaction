@@ -176,3 +176,40 @@ button, .btn {
 .dropdown-item-nested {
   position: relative;
 }
+
+/* RESPONSIVE OVERRIDES */
+@media (max-width: 900px) {
+  .desktop-menu { display: none !important; }
+  .mobile-menu-icon { display: flex !important; align-items: center; }
+  .topBarRight, .joinDebate, .giftTab { display: none !important; }
+  .topBarLeft { width: 100%; justify-content: center; }
+}
+@media (min-width: 901px) {
+  .mobile-menu-icon { display: none !important; }
+}
+@media (max-width: 768px) {
+  h1 { font-size: 2rem !important; }
+  p { font-size: 1rem !important; margin-bottom: 1rem; }
+  .heroQuote { font-size: 1.8rem !important; text-align: center; }
+  .heroImageCircle { width: 280px !important; height: 280px !important; margin: 0 auto; }
+  .heroContainer { padding: 0 1rem !important; text-align: center; }
+  .heroContent { display: flex; flex-direction: column; align-items: center; }
+  .sectionTitle { font-size: 1.8rem !important; }
+  .viewAllBtn, .heroButton { padding: 0.8rem 1.5rem !important; font-size: 0.85rem !important; width: 100%; justify-content: center; }
+  
+  .logoTitle { font-size: 1.1rem !important; }
+  .logoSubtitle { font-size: 0.65rem !important; }
+  .treePlaceholder { font-size: 30px !important; }
+  .navbarLeftSection { gap: 0.5rem !important; }
+  .coursesHero { padding: 2rem 1rem !important; }
+  .coursesHeroTitle { font-size: 1.8rem !important; }
+  .coursesHeroSub { font-size: 1rem !important; }
+  .modalActionsContainer { flex-direction: column !important; gap: 1.5rem !important; }
+  .modalDivider { width: 100% !important; height: 1px !important; background: #eee !important; margin: 10px 0 !important; }
+}
+@media (max-width: 480px) {
+  .heroQuote { font-size: 1.5rem !important; }
+  .sectionTitle { font-size: 1.5rem !important; }
+  .logoTitle { font-size: 0.95rem !important; }
+  .coursesHeroTitle { font-size: 1.5rem !important; }
+}

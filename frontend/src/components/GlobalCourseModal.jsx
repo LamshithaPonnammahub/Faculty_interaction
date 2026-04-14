@@ -102,7 +102,7 @@ const GlobalCourseModal = () => {
               </div>
             )}
 
-            <div style={styles.modalActions}>
+            <div className="modalActionsContainer" style={styles.modalActions}>
               <div style={styles.demoFormContainer}>
                 <h4 style={{marginBottom: '1rem', color: '#333'}}>Book a Demo Session</h4>
                 <form onSubmit={handleBookDemo} style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
@@ -133,7 +133,7 @@ const GlobalCourseModal = () => {
                 </form>
               </div>
 
-              <div style={styles.divider}></div>
+              <div className="modalDivider" style={styles.divider}></div>
 
               <div style={styles.enrollContainer}>
                  <h4 style={{marginBottom: '1rem', color: '#333'}}>Ready to Start?</h4>
@@ -169,7 +169,9 @@ const styles = {
     backgroundColor: 'white',
     padding: '2rem',
     borderRadius: '16px',
-    width: '90%',
+    width: '95%',
+    maxHeight: '90vh',
+    overflowY: 'auto',
     maxWidth: '600px',
     position: 'relative',
     boxShadow: '0 25px 50px rgba(0,0,0,0.15)'

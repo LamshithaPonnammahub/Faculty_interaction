@@ -136,9 +136,9 @@ const Courses = () => {
 
     return (
         <div style={{ marginTop: '110px', paddingBottom: '60px' }}>
-            <div style={styles.hero}>
-                <h1 style={styles.heroTitle}>Our Taxonomy of Courses</h1>
-                <p style={styles.heroSub}>Find the perfect program tailored to your needs. Fully interactive - click any course to Enroll or Book a Demo directly.</p>
+            <div className="coursesHero" style={styles.hero}>
+                <h1 className="coursesHeroTitle" style={styles.heroTitle}>Our Taxonomy of Courses</h1>
+                <p className="coursesHeroSub" style={styles.heroSub}>Find the perfect program tailored to your needs. Fully interactive - click any course to Enroll or Book a Demo directly.</p>
             </div>
             
             <div className="container" style={styles.container}>
@@ -227,7 +227,7 @@ const styles = {
     },
     grid: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
         gap: '1.5rem',
         marginTop: '1rem',
         marginBottom: '1.5rem'

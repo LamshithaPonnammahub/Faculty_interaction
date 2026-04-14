@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Gift, MessageCircle, ChevronDown, Phone, Clock, Globe, MessageSquare, Navigation, Video, User, ChevronRight } from 'lucide-react';
+import { Gift, MessageCircle, ChevronDown, Phone, Clock, Globe, MessageSquare, Navigation, Video, User, ChevronRight, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const RecursiveMenu = ({ nodeData, closeMenu, path }) => {
@@ -83,6 +83,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const [coursesTree, setCoursesTree] = useState({});
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         fetch('http://localhost:5000/api/public/courses')
@@ -113,11 +114,11 @@ const Navbar = () => {
     <>
       <div style={styles.topBar}>
         <div className="container" style={styles.topBarContainer}>
-          <div style={styles.topBarLeft}>
+          <div className="topBarLeft" style={styles.topBarLeft}>
             <span style={styles.topBarItem}><Phone size={14} /> +91 6783654256</span>
             <span style={styles.topBarItem}><Clock size={14} /> Mon - Sat: 8:00 - 15:00</span>
           </div>
-          <div style={styles.topBarRight}>
+          <div className="topBarRight" style={styles.topBarRight}>
             <div style={styles.followUs}>
               <span>Follow Us:</span>
               <Globe size={14} />
@@ -134,26 +135,26 @@ const Navbar = () => {
       
       <nav style={styles.nav}>
         <div className="container" style={styles.container}>
-          <div style={styles.leftSection}>
+          <div className="navbarLeftSection" style={styles.leftSection}>
             <Link to="/" style={styles.logoContainer}>
-              <div style={styles.treePlaceholder}>🌳</div>
+              <div className="treePlaceholder" style={styles.treePlaceholder}>🌳</div>
               <div style={styles.logoText}>
-                <span style={{fontWeight: 800, fontSize: '1.3rem', color: '#1e3a8a'}}>English Faculties</span>
-                <span style={{fontSize: '0.75rem', color: '#64748b', fontWeight: 600}}>Rooted in Excellence</span>
+                <span className="logoTitle" style={{fontWeight: 800, fontSize: '1.3rem', color: '#1e3a8a'}}>English Faculties</span>
+                <span className="logoSubtitle" style={{fontSize: '0.75rem', color: '#64748b', fontWeight: 600}}>Rooted in Excellence</span>
               </div>
             </Link>
             
-            <div style={styles.joinDebate}>
+            <div className="joinDebate" style={styles.joinDebate}>
               <span style={{fontWeight: 700, color: '#334155'}}>Join debate club</span>
             </div>
             
-            <div style={styles.giftTab}>
+            <div className="giftTab" style={styles.giftTab}>
                <Gift size={24} color="#2563eb" />
                <span style={{fontSize: '0.8rem', fontWeight: 700, color: '#2563eb', lineHeight: 1.1}}>Gift a<br/>Course</span>
             </div>
           </div>
 
-          <div style={styles.rightSection}>
+          <div className="desktop-menu" style={styles.rightSection}>
             <div style={styles.links}>
               <Link to="/" style={styles.link}>HOME</Link>
               
@@ -196,7 +197,36 @@ const Navbar = () => {
                <MessageCircle size={28} color="#22c55e" />
             </div>
           </div>
+          
+          <div className="mobile-menu-icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} style={{ display: 'none', cursor: 'pointer', paddingRight: '1rem' }}>
+             <Menu size={28} color="#1e3a8a" />
+          </div>
         </div>
+        
+        <AnimatePresence>
+            {isMobileMenuOpen && (
+                <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    style={{ overflow: 'hidden', width: '100%', background: 'white', position: 'absolute', top: '90px', left: 0, boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                 >
+                     <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                         <Link to="/" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>HOME</Link>
+                         <Link to="/courses" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>COURSES</Link>
+                         <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>ABOUT US</Link>
+                         <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} style={styles.link}>CONTACT</Link>
+                         <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} style={{...styles.loginRegister, color: '#1e3a8a', border: 'none', padding: 0, textDecoration: 'none'}}>
+                            <User size={18}/> Login / Register
+                         </Link>
+                         <div style={{ padding: '0.5rem 0', borderTop: '1px solid #e2e8f0', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div style={{fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center'}}>Join debate club</div>
+                            <div style={{fontWeight: 700, color: '#2563eb', display: 'flex', alignItems: 'center', gap: '8px'}}><Gift size={18} color="#2563eb" /> Gift a Course</div>
+                         </div>
+                     </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
       </nav>
     </>
   );
